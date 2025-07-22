@@ -1,0 +1,121 @@
+:root {
+  --background-light: #f8f9fa;
+  --text-color-light: #212529;
+  --card-bg-light: #ffffff;
+  --border-color-light: #dee2e6;
+  --positive-flow-light: #28a745;
+  --negative-flow-light: #dc3545;
+
+  --background-dark: #1a1a1a;
+  --text-color-dark: #f8f9fa;
+  --card-bg-dark: #2c2c2c;
+  --border-color-dark: #444444;
+  --positive-flow-dark: #20c997;
+  --negative-flow-dark: #e83e8c;
+}
+
+.app {
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.app.light {
+  background-color: var(--background-light);
+  color: var(--text-color-light);
+  --text-color-secondary: #6c757d;
+}
+
+.app.dark {
+  background-color: var(--background-dark);
+  color: var(--text-color-dark);
+  --text-color-secondary: #adb5bd;
+}
+
+.app.dark .summary-card,
+.app.dark .chart-container,
+.app.dark .etf-flow-card {
+  background-color: var(--card-bg-dark);
+  border: 1px solid var(--border-color-dark);
+  color: var(--text-color-dark);
+}
+
+.app.dark h2, .app.dark h3 {
+  color: var(--text-color-dark);
+}
+
+.app.dark .asset-selector button {
+  background-color: var(--card-bg-dark);
+  color: var(--text-color-dark);
+  border: 1px solid var(--border-color-dark);
+}
+
+.app.dark .asset-selector button.active {
+  background-color: #007bff;
+  color: #ffffff;
+  border-color: #007bff;
+}
+
+.app.dark .time-selector button {
+    background-color: var(--card-bg-dark);
+    color: var(--text-color-dark);
+    border: 1px solid var(--border-color-dark);
+}
+
+.app.dark .time-selector button.active {
+    background-color: #007bff;
+    color: #ffffff;
+    border-color: #007bff;
+}
+
+.app.dark .datepicker-input {
+    background-color: var(--card-bg-dark);
+    color: var(--text-color-dark);
+    border: 1px solid var(--border-color-dark);
+}
+
+.app.dark .react-datepicker {
+    background-color: var(--card-bg-dark);
+    border: 1px solid var(--border-color-dark);
+}
+
+.app.dark .react-datepicker__header {
+    background-color: var(--card-bg-dark);
+    border-bottom: 1px solid var(--border-color-dark);
+}
+
+.app.dark .react-datepicker__day-name,
+.app.dark .react-datepicker__day,
+.app.dark .react-datepicker__current-month {
+    color: var(--text-color-dark);
+}
+
+.app.dark .react-datepicker__day:hover {
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+.app.dark .react-datepicker__day--selected,
+.app.dark .react-datepicker__day--in-selecting-range,
+.app.dark .react-datepicker__day--in-range {
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+.app.dark .recharts-text, .app.dark .recharts-cartesian-axis-tick-value tspan {
+    fill: var(--text-color-dark);
+}
+
+.app.dark .recharts-cartesian-grid-horizontal line, .app.dark .recharts-cartesian-grid-vertical line {
+    stroke: var(--border-color-dark);
+}
+
+.app.dark .refresh-button svg {
+    color: var(--text-color-dark);
+}
+
+.app.light .dashboard {
+    background-color: var(--background-light);
+}
+
+.app.dark .dashboard {
+    background-color: var(--background-dark);
+}

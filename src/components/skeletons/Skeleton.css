@@ -1,0 +1,46 @@
+.skeleton {
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.skeleton-text {
+  width: 100%;
+  height: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-title {
+    width: 50%;
+    height: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.skeleton-card {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.skeleton-chart {
+    width: 100%;
+    height: 400px; /* Same height as the chart */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
