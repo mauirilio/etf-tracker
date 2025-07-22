@@ -1,69 +1,53 @@
-# React + TypeScript + Vite
+# ETF Tracker Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este é um painel de controle desenvolvido em React, TypeScript e Vite para monitorar o fluxo de entrada e saída de ETFs (Exchange Traded Funds) de Bitcoin e Ethereum. A aplicação consome dados da API da sosovalue e da CoinGecko para exibir informações atualizadas em tempo real.
 
-Currently, two official plugins are available:
+## Funcionalidades
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Visualização de Dados em Tempo Real:** Acompanhe o fluxo líquido diário, o total de ativos líquidos e o fluxo total desde o início para os principais ETFs.
+- **Gráficos Interativos:** Analise o histórico de fluxo líquido através de gráficos de barras com diferentes períodos de tempo (semanal, mensal, anual).
+- **Comparação de Ativos:** Alterne facilmente entre a visualização de dados para ETFs de Bitcoin e Ethereum.
+- **Cálculo de Dominância de Mercado:** Veja a porcentagem que os ativos líquidos totais dos ETFs representam em relação à capitalização de mercado total do Bitcoin ou Ethereum.
+- **Interface Responsiva e Moderna:** Desenvolvido com uma interface limpa e amigável, utilizando componentes React e estilização com CSS.
 
-## Expanding the ESLint configuration
+## Tecnologias Utilizadas
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Frontend:** React, TypeScript, Vite
+- **Estilização:** CSS Modules
+- **Gráficos:** Recharts
+- **Requisições HTTP:** Axios
+- **APIs:**
+    - [sosovalue](https://sosovalue.xyz/) para dados de fluxo de ETFs.
+    - [CoinGecko](https://www.coingecko.com/en/api) para dados de capitalização de mercado de criptomoedas.
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Como Executar o Projeto
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+1.  **Clone o repositório:**
+    ```bash
+    git clone <URL_DO_REPOSITORIO>
+    cd etf-tracker-dashboard
+    ```
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+2.  **Instale as dependências:**
+    ```bash
+    npm install
+    ```
+
+3.  **Inicie o servidor de desenvolvimento:**
+    ```bash
+    npm run dev
+    ```
+
+A aplicação estará disponível em `http://localhost:5173` (ou outra porta, se a 5173 estiver em uso).
+
+## Estrutura do Projeto
+
 ```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+src/
+├── components/    # Componentes reutilizáveis (Cards, Gráficos, Skeletons)
+├── pages/         # Páginas da aplicação (Dashboard)
+├── services/      # Lógica de chamada de API (apiService.ts)
+├── types/         # Definições de tipos TypeScript (etfTypes.ts)
+├── App.tsx        # Componente principal da aplicação
+└── main.tsx       # Ponto de entrada da aplicação
 ```
