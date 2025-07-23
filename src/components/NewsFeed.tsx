@@ -68,16 +68,16 @@ const NewsFeed: React.FC = () => {
 
   return (
     <div className="news-feed-container">
-      <h2 className="text-2xl font-bold mb-4">Notícias Relevantes</h2>
+      <h2 className="text-2xl font-bold mb-4" style={{ transform: 'scale(0.58)' }}>Notícias Relevantes</h2>
       <div className="grid grid-cols-1 gap-4">
         {news.map((article, index) => {
           return (
             <a href={article.url} key={index} target="_blank" rel="noopener noreferrer" className="flex items-start space-x-2 p-2 border rounded-lg hover:bg-gray-100 transition-colors">
               <img src={article.urlToImage || 'https://placehold.co/400x200'} alt={article.title} className="w-16 h-16 object-cover rounded-md flex-shrink-0" />
-              <div className="flex-1">
-                <h3 className="font-bold text-xs mb-1">{article.title}</h3>
-                <p className="text-xs text-gray-700 mb-2">{cleanupDescription(article.description)}</p>
-                <p className="text-xs text-gray-500">{article.source.name} - {new Date(article.publishedAt).toLocaleDateString()}</p>
+              <div className="flex-1" style={{ transform: 'scale(1.54)', transformOrigin: 'left top' }}>
+                <h3 className="news-card-title">{article.title}</h3>
+                <p className="news-card-description">{cleanupDescription(article.description)}</p>
+                <p className="news-card-source">{article.source.name} - {new Date(article.publishedAt).toLocaleDateString()}</p>
               </div>
             </a>
           );
