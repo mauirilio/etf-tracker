@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+.news-feed-container {
+    @apply mt-8;
+  }
+  
+  .news-card {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-transform transform hover:scale-105 flex flex-col;
+}
+
+
+.news-card-content {
+  @apply p-4 flex flex-col flex-grow;
+}
+
+.news-card-title {
+  @apply text-lg font-bold text-gray-900 dark:text-white mb-2;
+}
+
+.news-card-description {
+  @apply text-sm text-gray-700 dark:text-gray-300 flex-grow mb-4;
+}
+
+.news-card-source {
+  @apply text-sm text-gray-600 dark:text-gray-400 mt-auto;
+}

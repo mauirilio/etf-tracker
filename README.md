@@ -7,6 +7,7 @@ Este é um painel de controle desenvolvido em React, TypeScript e Vite para moni
 - **Visualização de Dados em Tempo Real:** Acompanhe o fluxo líquido diário, o total de ativos líquidos e o fluxo total desde o início para os principais ETFs.
 - **Gráficos Interativos:** Analise o histórico de fluxo líquido através de gráficos de barras com diferentes períodos de tempo (semanal, mensal, anual).
 - **Comparação de Ativos:** Alterne facilmente entre a visualização de dados para ETFs de Bitcoin e Ethereum.
+- **Feed de Notícias Relevantes:** Acesse um feed de notícias curado com as informações mais importantes sobre o mercado de ETFs de criptomoedas, focando em Bitcoin, Ethereum, e anúncios da SEC.
 - **Cálculo de Dominância de Mercado:** Veja a porcentagem que os ativos líquidos totais dos ETFs representam em relação à capitalização de mercado total do Bitcoin ou Ethereum.
 - **Interface Responsiva e Moderna:** Desenvolvido com uma interface limpa e amigável, utilizando componentes React e estilização com CSS.
 

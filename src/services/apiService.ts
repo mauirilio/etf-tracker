@@ -1,14 +1,23 @@
 import axios from 'axios';
 
 const SOSO_API_KEY = import.meta.env.VITE_SOSO_API_KEY;
-const SOSO_BASE_URL = "https://api.sosovalue.xyz/openapi/v2";
-const COINGECKO_BASE_URL = "https://api.coingecko.com/api/v3";
+const SOSO_BASE_URL = "/soso-api/openapi/v2";
+const COINGECKO_BASE_URL = "/coingecko-api/api/v3";
+const NEWS_API_KEY = import.meta.env.VITE_NEWS_API_KEY;
+const NEWS_API_BASE_URL = "https://newsapi.org/v2";
 
 const sosoApiClient = axios.create({
     baseURL: SOSO_BASE_URL,
     headers: {
         "Content-Type": "application/json",
         "x-soso-api-key": SOSO_API_KEY
+    }
+});
+
+const newsApiClient = axios.create({
+    baseURL: NEWS_API_BASE_URL,
+    headers: {
+        "Content-Type": "application/json",
     }
 });
 
@@ -66,6 +75,25 @@ export const getEtfHistory = async (assetType: 'btc' | 'eth', cycle: 'day' | 'we
         return response.data.data || [];
     } catch (error) {
         throw handleError(error, `getEtfHistory(${assetType}, ${cycle})`);
+    }
+};
+
+
+
+export const getNews = async () => {
+    try {
+        const response = await newsApiClient.get('/everything', {
+            params: {
+                q: '(bitcoin OR ethereum) AND (ETF OR SEC OR BlackRock OR Fidelity OR Grayscale)',
+                apiKey: NEWS_API_KEY,
+                language: 'pt',
+                sortBy: 'publishedAt',
+                pageSize: 10
+            }
+        });
+        return response.data.articles;
+    } catch (error) {
+        throw handleError(error, `getNews(bitcoin OR ethereum)`);
     }
 };
 

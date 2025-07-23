@@ -1,12 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { getEtfData, getEtfHistory, getMarketCap } from '../services/apiService';
-import type { EtfData, EtfHistory } from '../types/etfTypes';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { useState, useEffect } from 'react';
+import type { EtfHistory } from '../types/etfTypes';
 import { FiRefreshCw } from 'react-icons/fi';
 import SummaryCardSkeleton from '../components/skeletons/SummaryCardSkeleton';
 import ChartSkeleton from '../components/skeletons/ChartSkeleton';
+import { useEtfData } from '../hooks/useEtfData';
+import SummaryCards from '../components/SummaryCards';
+import FlowChart from '../components/FlowChart';
+import NewsFeed from '../components/NewsFeed';
 import './Dashboard.css';
 
 const formatCurrency = (value: string | number) => {
@@ -35,6 +35,10 @@ interface DashboardProps {
 const Dashboard: React.FC<DashboardProps> = ({ theme, toggleTheme }) => {
     const [positiveColor, setPositiveColor] = useState('#28a745');
     const [negativeColor, setNegativeColor] = useState('#dc3545');
+    const [selectedAsset, setSelectedAsset] = useState<'btc' | 'eth'>('btc');
+    const { data, history, marketCap, loading, error, fetchData } = useEtfData(selectedAsset);
+    const [timeRange, setTimeRange] = useState<'Diário' | 'Semanal' | 'Mensal' | 'Personalizado'>('Diário');
+    const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
 
     useEffect(() => {
         const style = getComputedStyle(document.documentElement);
@@ -43,40 +47,6 @@ const Dashboard: React.FC<DashboardProps> = ({ theme, toggleTheme }) => {
         setPositiveColor(positive || '#28a745');
         setNegativeColor(negative || '#dc3545');
     }, [theme]);
-    const [selectedAsset, setSelectedAsset] = useState<'btc' | 'eth'>('btc');
-    const [data, setData] = useState<EtfData[]>([]);
-    const [history, setHistory] = useState<EtfHistory[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [timeRange, setTimeRange] = useState<'Diário' | 'Semanal' | 'Mensal' | 'Personalizado'>('Diário');
-    const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
-    const [marketCap, setMarketCap] = useState<any>(null);
-
-    const fetchData = useCallback(async () => {
-        try {
-            setLoading(true);
-
-            const assetIds = selectedAsset === 'btc' ? ['bitcoin'] : ['ethereum'];
-            const [dataRes, historyRes, marketCapRes] = await Promise.all([
-                getEtfData(selectedAsset),
-                getEtfHistory(selectedAsset, 'day'),
-                getMarketCap(assetIds)
-            ]);
-
-            setData(dataRes);
-            setHistory(historyRes);
-            setMarketCap(marketCapRes);
-
-        } catch (err: any) {
-            console.error("Falha ao buscar dados:", err);
-            throw new Error(err.message || 'Ocorreu um erro desconhecido ao buscar os dados.');
-        } finally {
-            setLoading(false);
-        }
-    }, [selectedAsset]);
-
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
 
 
 
@@ -167,6 +137,20 @@ const Dashboard: React.FC<DashboardProps> = ({ theme, toggleTheme }) => {
 
     const chartData = getChartData();
 
+    if (error) {
+        return (
+            <div className="dashboard error-container">
+                <div className="error-message">
+                    <h3>Oops! Algo deu errado.</h3>
+                    <p>{error}</p>
+                    <button onClick={() => fetchData()} className="retry-button">
+                        Tentar Novamente
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     if (loading) {
         return (
             <div className="dashboard">
@@ -185,6 +169,14 @@ const Dashboard: React.FC<DashboardProps> = ({ theme, toggleTheme }) => {
                 </div>
                 <div className="main-content">
                     <ChartSkeleton />
+                </div>
+                <div className="news-feed-skeleton">
+                    <div className="skeleton-title" style={{ width: '200px', height: '32px', marginBottom: '16px' }}></div>
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        <div className="skeleton-news-card" style={{ height: '250px' }}></div>
+                        <div className="skeleton-news-card" style={{ height: '250px' }}></div>
+                        <div className="skeleton-news-card" style={{ height: '250px' }}></div>
+                    </div>
                 </div>
             </div>
         );
@@ -212,73 +204,24 @@ const Dashboard: React.FC<DashboardProps> = ({ theme, toggleTheme }) => {
                 </div>
             </div>
 
-            <div className="summary-cards">
-                <div className="top-summary-cards">
-                    <div className="summary-card">
-                        <h3>Fluxo Líquido (Último dia)</h3>
-                        <p className={lastDayNetFlow >= 0 ? 'positive-flow' : 'negative-flow'}>{formatCurrency(lastDayNetFlow)}</p>
-                    </div>
-
-
-                    <div className="summary-card">
-                        <h3>Ativos Líquidos Totais</h3>
-                        <p className='positive-flow'>
-                            {formatCurrency(totalNetAssets)}
-                            {marketCapPercentage > 0 && (
-                                <span style={{ fontSize: '0.8rem', color: 'var(--text-color-secondary)', marginLeft: '8px' }}>
-                                    ({marketCapPercentage.toFixed(2)}% do cap. de mercado)
-                                </span>
-                            )}
-                        </p>
-                    </div>
-                </div>
-            </div>
+            <SummaryCards 
+                lastDayNetFlow={lastDayNetFlow} 
+                totalNetAssets={totalNetAssets} 
+                marketCapPercentage={marketCapPercentage} 
+                formatCurrency={formatCurrency} 
+            />
 
             <div className="main-content">
-                <div className="chart-container">
-                    <div className="chart-header">
-                        <h2>Fluxo Líquido Total</h2>
-                        <div className="time-selector">
-                            <button className={timeRange === 'Diário' ? 'active' : ''} onClick={() => { setTimeRange('Diário'); setDateRange([null, null]); }}>Diário</button>
-                            <button className={timeRange === 'Semanal' ? 'active' : ''} onClick={() => { setTimeRange('Semanal'); setDateRange([null, null]); }}>Semanal</button>
-                            <button className={timeRange === 'Mensal' ? 'active' : ''} onClick={() => { setTimeRange('Mensal'); setDateRange([null, null]); }}>Mensal</button>
-                            <DatePicker
-                                selectsRange={true}
-                                startDate={startDate}
-                                endDate={endDate}
-                                onChange={(update) => {
-                                    setDateRange(update);
-                                    if (update[0] && update[1]) {
-                                        setTimeRange('Personalizado');
-                                    }
-                                }}
-                                isClearable={true}
-                                placeholderText="Selecione um período"
-                                className={`datepicker-input ${timeRange === 'Personalizado' ? 'active' : ''}`}
-                            />
-                        </div>
-                    </div>
-                    {chartData.length > 0 ? (
-                        <ResponsiveContainer width="100%" height={600}>
-                            <BarChart data={chartData} margin={{ top: 20, right: 40, left: 40, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                <XAxis dataKey="date" />
-                                <YAxis tickFormatter={(value) => `$${value}M`} />
-                                <Tooltip formatter={(value: number) => [formatCurrency(value * 1e6), 'Fluxo']} />
-                                <Bar dataKey="flow">
-                                    {chartData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.flow >= 0 ? positiveColor : negativeColor} />
-                                    ))}
-                                </Bar>
-                            </BarChart>
-                        </ResponsiveContainer>
-                    ) : (
-                        <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-color-secondary)' }}>
-                            <h3>Sem dados para o período selecionado.</h3>
-                            <p>Por favor, ajuste o filtro de tempo ou tente novamente mais tarde.</p>
-                        </div>
-                    )}
-                </div>
+                <FlowChart 
+                    chartData={chartData}
+                    timeRange={timeRange}
+                    setTimeRange={setTimeRange}
+                    dateRange={dateRange}
+                    setDateRange={setDateRange}
+                    positiveColor={positiveColor}
+                    negativeColor={negativeColor}
+                    formatCurrency={formatCurrency}
+                />
                 <div className="summary-card etf-flow-card">
                     <h3>Fluxo por ETF</h3>
                     {data.map((etf, index) => (
@@ -292,6 +235,8 @@ const Dashboard: React.FC<DashboardProps> = ({ theme, toggleTheme }) => {
                     ))}
                 </div>
             </div>
+
+            <NewsFeed />
         </div>
     );
 
