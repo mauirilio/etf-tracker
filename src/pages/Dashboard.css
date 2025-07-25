@@ -91,10 +91,10 @@ input:checked + .slider:before {
 }
 
 .asset-selector button {
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
+    background-color: var(--button-bg);
+    border: 1px solid var(--border-color);
     border-radius: 20px;
-    color: #495057;
+    color: var(--button-text);
     cursor: pointer;
     font-size: 0.9rem;
     margin: 0 0.5rem;
@@ -104,31 +104,31 @@ input:checked + .slider:before {
 }
 
 .time-selector button:hover {
-    background-color: #e9ecef;
+    opacity: 0.8;
 }
 
 .datepicker-input {
     font-size: 0.9rem;
     padding: 0.5rem 1rem;
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--border-color);
     border-radius: 0.375rem;
-    background-color: #f8f9fa;
-    color: #495057;
+    background-color: var(--button-bg);
+    color: var(--button-text);
     cursor: pointer;
     transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
     margin-left: 0.5rem;
 }
 
 .datepicker-input.active {
-    background-color: #6c757d;
+    background-color: var(--button-active-bg);
     color: white;
-    border-color: #6c757d;
+    border-color: var(--button-active-bg);
 }
 
 .asset-selector button.active {
-    background-color: #0d6efd;
+    background-color: var(--button-active-bg);
     color: white;
-    border-color: #0d6efd;
+    border-color: var(--button-active-bg);
 }
 
 .summary-cards {
@@ -145,16 +145,17 @@ input:checked + .slider:before {
 }
 
 .summary-card {
-    background-color: white;
+    background-color: var(--card-bg);
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
     text-align: center;
+    border: 1px solid var(--border-color);
 }
 
 .summary-card h3 {
     font-size: 0.9rem;
-    color: #6c757d;
+    color: var(--text-color-secondary);
     margin-bottom: 0.5rem;
 }
 
@@ -166,7 +167,7 @@ input:checked + .slider:before {
 
 .main-content {
     display: grid;
-    grid-template-columns: 1fr 350px;
+    grid-template-columns: 4fr 1fr;
     gap: 2rem;
     align-items: flex-start;
 }
@@ -180,14 +181,18 @@ input:checked + .slider:before {
 }
 
 .chart-container {
-    background-color: white;
+    background-color: var(--card-bg);
     border-radius: 16px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e9ecef;
+    border: 1px solid var(--border-color);
     padding: 2rem;
 }
 
 .etf-flow-card {
+    background-color: var(--card-bg);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
     height: fit-content;
 }
 
@@ -236,16 +241,23 @@ input:checked + .slider:before {
 }
 
 .etf-flow-card h3 {
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
-    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: left;
+    color: var(--text-color);
 }
 
 .etf-list-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+.etf-list-item:last-child {
+    border-bottom: none;
 }
 
 .etf-info {
@@ -254,14 +266,15 @@ input:checked + .slider:before {
 }
 
 .etf-info .color-dot {
-    border-radius: 50%;
-    height: 10px;
-    margin-right: 0.75rem;
     width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 1rem;
 }
 
 .etf-flow-value {
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 0.9rem;
 }
 
 .positive-flow {

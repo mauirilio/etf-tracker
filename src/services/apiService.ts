@@ -3,8 +3,7 @@ import axios from 'axios';
 const SOSO_API_KEY = import.meta.env.VITE_SOSO_API_KEY;
 const SOSO_BASE_URL = "/soso-api/openapi/v2";
 const COINGECKO_BASE_URL = "/coingecko-api/api/v3";
-const NEWS_API_KEY = import.meta.env.VITE_NEWS_API_KEY;
-const NEWS_API_BASE_URL = "https://newsapi.org/v2";
+
 
 const sosoApiClient = axios.create({
     baseURL: SOSO_BASE_URL,
@@ -14,12 +13,7 @@ const sosoApiClient = axios.create({
     }
 });
 
-const newsApiClient = axios.create({
-    baseURL: NEWS_API_BASE_URL,
-    headers: {
-        "Content-Type": "application/json",
-    }
-});
+
 
 const coingeckoApiClient = axios.create({
     baseURL: COINGECKO_BASE_URL,
@@ -30,10 +24,10 @@ const coingeckoApiClient = axios.create({
 
 // Função para formatar erros de maneira consistente
 const handleError = (error: unknown, context: string) => {
-    console.error(context, error);
     if (axios.isAxiosError(error)) {
         // Erros vindos da requisição (rede, status code, etc.)
-        return new Error(`API Error in ${context}: ${error.response?.data?.message || error.message}`);
+        const apiMessage = error.response?.data?.results?.message || error.response?.data?.message || error.message;
+        return new Error(`API Error in ${context}: ${apiMessage}`);
     } else if (error instanceof Error) {
         // Erros lançados intencionalmente ou outros erros de runtime
         return new Error(`Application Error in ${context}: ${error.message}`);
@@ -80,22 +74,7 @@ export const getEtfHistory = async (assetType: 'btc' | 'eth', cycle: 'day' | 'we
 
 
 
-export const getNews = async () => {
-    try {
-        const response = await newsApiClient.get('/everything', {
-            params: {
-                q: '(bitcoin OR ethereum) AND (ETF OR SEC OR BlackRock OR Fidelity OR Grayscale)',
-                apiKey: NEWS_API_KEY,
-                language: 'pt',
-                sortBy: 'publishedAt',
-                pageSize: 10
-            }
-        });
-        return response.data.articles;
-    } catch (error) {
-        throw handleError(error, `getNews(bitcoin OR ethereum)`);
-    }
-};
+
 
 export const getMarketCap = async (assetIds: string[]) => {
     try {

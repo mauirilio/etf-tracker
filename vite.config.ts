@@ -10,12 +10,17 @@ export default defineConfig({
       '/soso-api': {
         target: 'https://api.sosovalue.xyz',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/soso-api/, ''),
+        rewrite: (path) => path.replace('/soso-api', ''),
       },
       '/coingecko-api': {
         target: 'https://api.coingecko.com',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/coingecko-api/, ''),
+        rewrite: (path) => path.replace('/coingecko-api', ''),
+      },
+      '/newsdata-api': {
+        target: 'https://newsdata.io/api/1',
+        changeOrigin: true,
+        rewrite: (path) => path.replace('/newsdata-api', ''),
       },
     },
   },

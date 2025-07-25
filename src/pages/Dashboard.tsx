@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { EtfHistory } from '../types/etfTypes';
 import { FiRefreshCw } from 'react-icons/fi';
 import SummaryCardSkeleton from '../components/skeletons/SummaryCardSkeleton';
@@ -6,7 +6,8 @@ import ChartSkeleton from '../components/skeletons/ChartSkeleton';
 import { useEtfData } from '../hooks/useEtfData';
 import SummaryCards from '../components/SummaryCards';
 import FlowChart from '../components/FlowChart';
-import NewsFeed from '../components/NewsFeed';
+import EtfList from '../components/EtfList';
+
 import './Dashboard.css';
 
 const formatCurrency = (value: string | number) => {
@@ -56,26 +57,24 @@ const Dashboard: React.FC<DashboardProps> = ({ theme, toggleTheme }) => {
 
     const [startDate, endDate] = dateRange;
 
-    const baseSortedHistory = [...history]
-        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const baseSortedHistory = useMemo(() => 
+        [...history].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()), 
+    [history]);
 
     const lastDayNetFlow = baseSortedHistory.length > 0 ? parseFloat(baseSortedHistory[baseSortedHistory.length - 1].totalNetInflow) : 0;
 
-    const getChartData = () => {
+    const chartData = useMemo(() => {
         let historyToProcess = baseSortedHistory;
 
         if (timeRange === 'Personalizado' && startDate && endDate) {
+            const startUTC = new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()));
+            const endUTC = new Date(Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()));
+            
             historyToProcess = baseSortedHistory.filter(item => {
                 const itemDate = new Date(item.date);
-                return itemDate >= startDate && itemDate <= endDate;
+                return itemDate >= startUTC && itemDate <= endUTC;
             });
-            return historyToProcess.map(item => ({
-                date: new Date(item.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', timeZone: 'UTC' }),
-                flow: parseFloat(item.totalNetInflow) / 1e6,
-            }));
-        }
-
-        if (timeRange === 'Mensal') {
+        } else if (timeRange === 'Mensal') {
             const monthlyData = historyToProcess.reduce((acc, item) => {
                 const date = new Date(item.date);
                 const monthKey = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
@@ -90,16 +89,14 @@ const Dashboard: React.FC<DashboardProps> = ({ theme, toggleTheme }) => {
                 const [year, month] = dateKey.split('-');
                 const date = new Date(Date.UTC(Number(year), Number(month) - 1, 2));
                 return {
-                    date: date.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric', timeZone: 'UTC' }),
+                    date: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' }),
                     flow: flow / 1e6,
                 };
             });
-        }
-
-        if (timeRange === 'Semanal') {
+        } else if (timeRange === 'Semanal') {
             const weeklyData = historyToProcess.reduce((acc, item) => {
                 const itemDate = new Date(item.date);
-                const dayOfWeek = itemDate.getUTCDay() === 0 ? 6 : itemDate.getUTCDay() - 1; // Monday = 0
+                const dayOfWeek = itemDate.getUTCDay() === 0 ? 6 : itemDate.getUTCDay() - 1;
                 const firstDayOfWeek = new Date(itemDate);
                 firstDayOfWeek.setUTCDate(itemDate.getUTCDate() - dayOfWeek);
                 const weekKey = `${firstDayOfWeek.getUTCFullYear()}-${String(firstDayOfWeek.getUTCMonth() + 1).padStart(2, '0')}-${String(firstDayOfWeek.getUTCDate()).padStart(2, '0')}`;
@@ -115,27 +112,22 @@ const Dashboard: React.FC<DashboardProps> = ({ theme, toggleTheme }) => {
                 const [year, month, day] = dateKey.split('-');
                 const date = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
                 return {
-                    date: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', timeZone: 'UTC' }),
+                    date: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' }),
                     flow: flow / 1e6,
                 };
             });
-        }
-
-        // Diário
-        if (timeRange === 'Diário') {
-            historyToProcess = historyToProcess.slice(-30);
+        } else if (timeRange === 'Diário') {
+            historyToProcess = historyToProcess.slice(-90);
         }
 
         return historyToProcess.map(item => {
             const date = new Date(item.date);
             return {
-                date: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', timeZone: 'UTC' }),
+                date: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' }),
                 flow: parseFloat(item.totalNetInflow) / 1e6,
             };
         });
-    };
-
-    const chartData = getChartData();
+    }, [baseSortedHistory, timeRange, startDate, endDate]);
 
     if (error) {
         return (
@@ -170,14 +162,7 @@ const Dashboard: React.FC<DashboardProps> = ({ theme, toggleTheme }) => {
                 <div className="main-content">
                     <ChartSkeleton />
                 </div>
-                <div className="news-feed-skeleton">
-                    <div className="skeleton-title" style={{ width: '200px', height: '32px', marginBottom: '16px' }}></div>
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        <div className="skeleton-news-card" style={{ height: '250px' }}></div>
-                        <div className="skeleton-news-card" style={{ height: '250px' }}></div>
-                        <div className="skeleton-news-card" style={{ height: '250px' }}></div>
-                    </div>
-                </div>
+
             </div>
         );
     }
@@ -222,21 +207,10 @@ const Dashboard: React.FC<DashboardProps> = ({ theme, toggleTheme }) => {
                     negativeColor={negativeColor}
                     formatCurrency={formatCurrency}
                 />
-                <div className="summary-card etf-flow-card">
-                    <h3>Fluxo por ETF</h3>
-                    {data.map((etf, index) => (
-                        <div key={etf.ticker} className="etf-list-item">
-                            <div className="etf-info">
-                                <div className="color-dot" style={{ backgroundColor: ['#28a745', '#17a2b8', '#ffc107', '#007bff', '#6f42c1', '#fd7e14', '#20c997', '#6610f2', '#e83e8c'][index % 9] }}></div>
-                                <span>{etf.ticker}</span>
-                            </div>
-                            <span className={`etf-flow-value ${etf.dailyNetInflow.value >= 0 ? 'positive-flow' : 'negative-flow'}`}>{formatCurrency(etf.dailyNetInflow.value)}</span>
-                        </div>
-                    ))}
-                </div>
+                <EtfList etfs={data} formatCurrency={formatCurrency} />
             </div>
 
-            <NewsFeed />
+
         </div>
     );
 
