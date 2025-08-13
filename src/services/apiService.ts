@@ -76,7 +76,7 @@ export const getEtfHistory = async (assetType: 'btc' | 'eth', cycle: 'day' | 'we
 
 
 
-export const getMarketCap = async (assetIds: string[]) => {
+export const getMarketCap = async (assetIds: string[], retries: number = 2) => {
     try {
         const response = await coingeckoApiClient.get('/simple/price', {
             params: {
@@ -88,6 +88,19 @@ export const getMarketCap = async (assetIds: string[]) => {
         console.log('getMarketCap response:', response.data);
         return response.data;
     } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 429 && retries > 0) {
+            // Rate limit atingido, aguarda e tenta novamente
+            console.warn(`Rate limit atingido para getMarketCap. Tentando novamente em 2 segundos... (${retries} tentativas restantes)`);
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            return getMarketCap(assetIds, retries - 1);
+        }
+        
+        // Para outros erros ou quando as tentativas se esgotaram, retorna dados padrão
+        if (axios.isAxiosError(error) && error.response?.status === 429) {
+            console.warn('Rate limit persistente na API CoinGecko. Usando dados padrão.');
+            return null; // Retorna null em vez de lançar erro
+        }
+        
         throw handleError(error, `getMarketCap(${assetIds.join(',')})`);
     }
 };

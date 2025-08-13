@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getEtfData, getEtfHistory, getMarketCap } from '../services/apiService';
+import { getCorrectEtfName } from '../utils/etfNameMapping';
 import type { EtfData, EtfHistory } from '../types/etfTypes';
 
 export const useEtfData = (selectedAsset: 'btc' | 'eth') => {
@@ -22,7 +23,12 @@ export const useEtfData = (selectedAsset: 'btc' | 'eth') => {
             ]);
 
             if (results[0].status === 'fulfilled') {
-                setData(results[0].value);
+                // Aplica correção de nomes dos ETFs
+                const correctedData = results[0].value.map((etf: EtfData) => ({
+                    ...etf,
+                    institute: getCorrectEtfName(etf.ticker, etf.institute)
+                }));
+                setData(correctedData);
             } else {
                 console.error("Falha ao buscar dados de ETF:", results[0].reason);
                 setError(prev => prev ? `${prev}\nFalha ao buscar dados de ETF.` : 'Falha ao buscar dados de ETF.');

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import type { EtfHistory } from '../types/etfTypes';
+import type { EtfHistory, EtfData } from '../types/etfTypes';
 import { FiRefreshCw } from 'react-icons/fi';
 import SummaryCardSkeleton from '../components/skeletons/SummaryCardSkeleton';
 import ChartSkeleton from '../components/skeletons/ChartSkeleton';
@@ -7,8 +7,10 @@ import { useEtfData } from '../hooks/useEtfData';
 import SummaryCards from '../components/SummaryCards';
 import FlowChart from '../components/FlowChart';
 import EtfList from '../components/EtfList';
+import EtfDetails from '../components/EtfDetails';
 
 import './Dashboard.css';
+import '../components/EtfDetails.css';
 
 const formatCurrency = (value: string | number) => {
     const numValue = typeof value === 'string' ? parseFloat(value.replace(/[^0-9.-]+/g,"")) : value;
@@ -21,9 +23,9 @@ const formatCurrency = (value: string | number) => {
     const absValue = Math.abs(numValue);
 
     if (absValue >= 1e9) {
-        return `${sign}$${(absValue / 1e9).toFixed(2)}B`;
+        return `${sign}$${(absValue / 1e9).toFixed(2)} B`;
     } else if (absValue >= 1e6) {
-        return `${sign}$${(absValue / 1e6).toFixed(2)}M`;
+        return `${sign}$${(absValue / 1e6).toFixed(2)} M`;
     }
     return `${sign}$${absValue.toFixed(2)}`;
 };
@@ -40,6 +42,8 @@ const Dashboard: React.FC<DashboardProps> = ({ theme, toggleTheme }) => {
     const { data, history, marketCap, loading, error, fetchData } = useEtfData(selectedAsset);
     const [timeRange, setTimeRange] = useState<'Diário' | 'Semanal' | 'Mensal' | 'Personalizado'>('Diário');
     const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
+    const [selectedEtf, setSelectedEtf] = useState<EtfData | null>(null);
+    const [isEtfDetailsOpen, setIsEtfDetailsOpen] = useState(false);
 
     useEffect(() => {
         const style = getComputedStyle(document.documentElement);
@@ -207,10 +211,27 @@ const Dashboard: React.FC<DashboardProps> = ({ theme, toggleTheme }) => {
                     negativeColor={negativeColor}
                     formatCurrency={formatCurrency}
                 />
-                <EtfList etfs={data} formatCurrency={formatCurrency} />
+                <EtfList 
+                    etfs={data} 
+                    formatCurrency={formatCurrency} 
+                    onEtfClick={(etf) => {
+                        setSelectedEtf(etf);
+                        setIsEtfDetailsOpen(true);
+                    }}
+                />
             </div>
 
-
+            {selectedEtf && (
+                <EtfDetails 
+                    etf={selectedEtf}
+                    isOpen={isEtfDetailsOpen}
+                    onClose={() => {
+                        setIsEtfDetailsOpen(false);
+                        setSelectedEtf(null);
+                    }}
+                    formatCurrency={formatCurrency}
+                />
+            )}
         </div>
     );
 

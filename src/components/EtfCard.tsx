@@ -1,6 +1,8 @@
 import React from 'react';
 import { Card } from 'react-bootstrap';
 import type { EtfData } from '../types/etfTypes';
+import { formatDateSafely } from '../utils/dateUtils';
+import { getEtfIcon } from '../utils/etfIcons';
 
 interface EtfCardProps {
     etf: EtfData;
@@ -20,14 +22,17 @@ const EtfCard: React.FC<EtfCardProps> = ({ etf }) => {
     };
 
     const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('pt-BR');
+        return formatDateSafely(dateString);
     };
 
     return (
         <Card className="h-100 shadow-sm">
             <Card.Body className="d-flex flex-column">
                 <Card.Title className="font-weight-bold">{etf.institute}</Card.Title>
-                <Card.Subtitle className="mb-2 text-muted">{etf.ticker}</Card.Subtitle>
+                <Card.Subtitle className="mb-2 text-muted d-flex align-items-center gap-2">
+                    {getEtfIcon(etf.ticker)}
+                    <span>{etf.ticker}</span>
+                </Card.Subtitle>
                 <div className="mt-auto">
                     <Card.Text className="mb-1">
                         <strong>Fluxo Líquido Diário:</strong> {formatCurrency(etf.dailyNetInflow.value)}

@@ -1,0 +1,224 @@
+/* Modal overlay */
+.etf-details-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+/* Modal container */
+.etf-details-modal {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+}
+
+/* Header */
+.etf-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 24px 24px 16px 24px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.etf-title-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.etf-details-title h2 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.etf-institute {
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 4px;
+    display: block;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.close-button:hover {
+    background-color: var(--hover-bg);
+    color: var(--text-primary);
+}
+
+/* Content */
+.etf-details-content {
+    padding: 24px;
+}
+
+.detail-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px;
+    background: var(--section-bg);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.detail-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.detail-icon {
+    padding: 12px;
+    border-radius: 8px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+}
+
+.positive-icon {
+    color: var(--positive-flow);
+}
+
+.negative-icon {
+    color: var(--negative-flow);
+}
+
+.neutral-icon {
+    color: var(--text-secondary);
+}
+
+.detail-info {
+    flex: 1;
+}
+
+.detail-info h3 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.detail-value {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    color: var(--text-primary);
+}
+
+.detail-value.positive-flow {
+    color: var(--positive-flow);
+}
+
+.detail-value.negative-flow {
+    color: var(--negative-flow);
+}
+
+.detail-description {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Summary section */
+.detail-summary {
+    margin-top: 24px;
+    padding: 20px;
+    background: var(--section-bg);
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+
+.detail-summary h3 {
+    margin: 0 0 12px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.detail-summary p {
+    margin: 0;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    font-size: 15px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .etf-details-modal {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .etf-details-header {
+        padding: 20px 20px 16px 20px;
+    }
+    
+    .etf-details-content {
+        padding: 20px;
+    }
+    
+    .detail-card {
+        padding: 16px;
+    }
+    
+    .detail-value {
+        font-size: 20px;
+    }
+    
+    .etf-details-title h2 {
+        font-size: 24px;
+    }
+}
+
+/* Animation */
+.etf-details-overlay {
+    animation: fadeIn 0.2s ease-out;
+}
+
+.etf-details-modal {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}

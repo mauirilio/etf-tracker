@@ -254,6 +254,26 @@ input:checked + .slider:before {
     align-items: center;
     padding: 0.75rem 0;
     border-bottom: 1px solid var(--border-color-light);
+    transition: all 0.2s ease;
+}
+
+.etf-list-item.clickable {
+    cursor: pointer;
+    padding: 0.75rem 1rem;
+    margin: 0 -1rem;
+    border-radius: 8px;
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+.etf-list-item.clickable:hover {
+    background-color: var(--hover-bg);
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.etf-list-item.clickable:active {
+    transform: translateX(2px);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 .etf-list-item:last-child {
@@ -263,6 +283,12 @@ input:checked + .slider:before {
 .etf-info {
     display: flex;
     align-items: center;
+}
+
+.etf-ticker-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .etf-info .color-dot {
