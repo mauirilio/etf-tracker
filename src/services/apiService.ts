@@ -3,7 +3,7 @@ import type { AssetType } from '../types/etfTypes';
 
 // URL do nosso backend (usa variável de ambiente em prod ou localhost em dev)
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
-const COINGECKO_BASE_URL = "/coingecko-api/api/v3"; // Mantendo proxy do vite para coingecko por enquanto
+const COINGECKO_BASE_URL = "https://api.coingecko.com/api/v3"; // URL direta para produção
 
 const apiClient = axios.create({
     baseURL: API_BASE_URL,
