@@ -414,6 +414,21 @@ input:checked + .slider:before {
         width: 100%;
         margin-left: 0;
         margin-top: 0.5rem;
+        font-size: 0.85rem;
+        padding: 0.6rem;
+        padding-right: 2rem; /* Space for the 'x' button */
+        box-sizing: border-box;
+    }
+
+    /* Adjust the clear button position if possible via CSS class provided by library or generic input styling */
+    .react-datepicker__close-icon {
+        right: 10px !important;
+    }
+    
+    .react-datepicker__close-icon::after {
+        background-color: transparent !important;
+        color: inherit !important;
+        font-size: 1.2rem !important;
     }
 
     /* Fix DatePicker popup on mobile */
