@@ -29,6 +29,15 @@ const FlowChart: React.FC<FlowChartProps> = ({
     formatCurrency 
 }) => {
     const [startDate, endDate] = dateRange;
+    const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+
+    React.useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     return (
         <div className="chart-container">
@@ -51,6 +60,7 @@ const FlowChart: React.FC<FlowChartProps> = ({
                         isClearable={true}
                         placeholderText="Selecione um período"
                         className={`datepicker-input ${timeRange === 'Personalizado' ? 'active' : ''}`}
+                        popperPlacement="bottom-end"
                     />
                 </div>
             </div>
@@ -59,7 +69,7 @@ const FlowChart: React.FC<FlowChartProps> = ({
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={chartData} margin={{ top: 20, right: 10, left: 0, bottom: 5 }}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                            <XAxis dataKey="date" hide={window.innerWidth < 768} /> {/* Esconde datas no eixo X em mobile se necessário, ou ajusta */}
+                            <XAxis dataKey="date" hide={isMobile} />
                             <YAxis tickFormatter={(value) => `$${value}M`} width={50} />
                             <Tooltip formatter={(value: number) => [formatCurrency(value * 1e6), 'Fluxo']} />
                             <Bar dataKey="flow">

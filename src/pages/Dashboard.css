@@ -415,6 +415,21 @@ input:checked + .slider:before {
         margin-left: 0;
         margin-top: 0.5rem;
     }
+
+    /* Fix DatePicker popup on mobile */
+    .react-datepicker-popper {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        z-index: 9999 !important;
+        width: max-content;
+    }
+
+    .react-datepicker {
+        font-size: 1rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
 }
 
 @media (max-width: 768px) {
