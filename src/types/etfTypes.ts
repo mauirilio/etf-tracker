@@ -1,3 +1,5 @@
+export type AssetType = 'btc' | 'eth' | 'sol';
+
 export interface EtfData {
     ticker: string;
     institute: string;

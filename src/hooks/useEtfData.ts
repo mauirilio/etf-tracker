@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getEtfData, getEtfHistory, getMarketCap } from '../services/apiService';
 import { getCorrectEtfName } from '../utils/etfNameMapping';
-import type { EtfData, EtfHistory } from '../types/etfTypes';
+import type { EtfData, EtfHistory, AssetType } from '../types/etfTypes';
 
-export const useEtfData = (selectedAsset: 'btc' | 'eth') => {
+export const useEtfData = (selectedAsset: AssetType) => {
     const [data, setData] = useState<EtfData[]>([]);
     const [history, setHistory] = useState<EtfHistory[]>([]);
     const [marketCap, setMarketCap] = useState<any>(null);
@@ -15,7 +15,7 @@ export const useEtfData = (selectedAsset: 'btc' | 'eth') => {
             setLoading(true);
             setError(null);
 
-            const assetIds = selectedAsset === 'btc' ? ['bitcoin'] : ['ethereum'];
+            const assetIds = selectedAsset === 'btc' ? ['bitcoin'] : selectedAsset === 'eth' ? ['ethereum'] : ['solana'];
             const results = await Promise.allSettled([
                 getEtfData(selectedAsset),
                 getEtfHistory(selectedAsset, 'day'),

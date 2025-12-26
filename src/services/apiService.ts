@@ -1,19 +1,16 @@
 import axios from 'axios';
+import type { AssetType } from '../types/etfTypes';
 
-const SOSO_API_KEY = import.meta.env.VITE_SOSO_API_KEY;
-const SOSO_BASE_URL = "/soso-api/openapi/v2";
-const COINGECKO_BASE_URL = "/coingecko-api/api/v3";
+// URL do nosso backend (usa variável de ambiente em prod ou localhost em dev)
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+const COINGECKO_BASE_URL = "/coingecko-api/api/v3"; // Mantendo proxy do vite para coingecko por enquanto
 
-
-const sosoApiClient = axios.create({
-    baseURL: SOSO_BASE_URL,
+const apiClient = axios.create({
+    baseURL: API_BASE_URL,
     headers: {
-        "Content-Type": "application/json",
-        "x-soso-api-key": SOSO_API_KEY
+        "Content-Type": "application/json"
     }
 });
-
-
 
 const coingeckoApiClient = axios.create({
     baseURL: COINGECKO_BASE_URL,
@@ -25,58 +22,49 @@ const coingeckoApiClient = axios.create({
 // Função para formatar erros de maneira consistente
 const handleError = (error: unknown, context: string) => {
     if (axios.isAxiosError(error)) {
-        // Erros vindos da requisição (rede, status code, etc.)
-        const apiMessage = error.response?.data?.results?.message || error.response?.data?.message || error.message;
+        const apiMessage = error.response?.data?.error || error.message;
         return new Error(`API Error in ${context}: ${apiMessage}`);
     } else if (error instanceof Error) {
-        // Erros lançados intencionalmente ou outros erros de runtime
         return new Error(`Application Error in ${context}: ${error.message}`);
     } else {
-        // Casos inesperados
         return new Error(`An unknown error occurred in ${context}`);
     }
 };
 
-export const getEtfData = async (assetType: 'btc' | 'eth') => {
+export const getEtfData = async (assetType: AssetType) => {
     try {
-        const response = await sosoApiClient.post('/etf/currentEtfDataMetrics', {
-            type: `us-${assetType}-spot`
+        // Chamada para o nosso backend
+        const response = await apiClient.get('/etf/current', {
+            params: { type: assetType }
         });
-        console.log('getEtfData response:', response.data);
-        // Resposta da API com erro de negócio
-        if (response.data.code !== 0) {
-            throw new Error(response.data.message || 'Failed to fetch ETF data');
-        }
-        // Resposta bem-sucedida, mas com estrutura de dados inesperada
-        return response.data.data?.list || [];
+        
+        // O backend retorna { list: [...] }
+        return response.data.list || [];
     } catch (error) {
         throw handleError(error, `getEtfData(${assetType})`);
     }
 };
 
-export const getEtfHistory = async (assetType: 'btc' | 'eth', cycle: 'day' | 'week' | 'month' = 'day') => {
+export const getEtfHistory = async (assetType: AssetType, cycle: 'day' | 'week' | 'month' = 'day') => {
     try {
-        const response = await sosoApiClient.post('/etf/historicalInflowChart', {
-            type: `us-${assetType}-spot`,
-            cycle: cycle
+        // Chamada para o nosso backend
+        // Nota: O backend atual suporta apenas dados diários no banco (history), 
+        // a agregação semanal/mensal deve ser feita no frontend ou implementada no backend.
+        // O frontend original já fazia agregação local para semanal/mensal se recebesse diário?
+        // Verificando Dashboard.tsx: Sim, o Dashboard calcula 'Mensal' e 'Semanal' a partir do histórico completo.
+        // Então basta retornar o histórico diário completo.
+        
+        const response = await apiClient.get('/etf/history', {
+            params: { type: assetType }
         });
-        console.log('getEtfHistory response:', response.data);
-        // Resposta da API com erro de negócio
-        if (response.data.code !== 0) {
-            throw new Error(response.data.message || 'Failed to fetch ETF history');
-        }
-        // Resposta bem-sucedida, mas com estrutura de dados inesperada
+
         return response.data.data || [];
     } catch (error) {
         throw handleError(error, `getEtfHistory(${assetType}, ${cycle})`);
     }
 };
 
-
-
-
-
-export const getMarketCap = async (assetIds: string[], retries: number = 2) => {
+export const getMarketCap = async (assetIds: string[], retries: number = 2): Promise<any> => {
     try {
         const response = await coingeckoApiClient.get('/simple/price', {
             params: {
@@ -85,22 +73,30 @@ export const getMarketCap = async (assetIds: string[], retries: number = 2) => {
                 include_market_cap: 'true'
             }
         });
-        console.log('getMarketCap response:', response.data);
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 429 && retries > 0) {
-            // Rate limit atingido, aguarda e tenta novamente
             console.warn(`Rate limit atingido para getMarketCap. Tentando novamente em 2 segundos... (${retries} tentativas restantes)`);
             await new Promise(resolve => setTimeout(resolve, 2000));
             return getMarketCap(assetIds, retries - 1);
         }
         
-        // Para outros erros ou quando as tentativas se esgotaram, retorna dados padrão
         if (axios.isAxiosError(error) && error.response?.status === 429) {
             console.warn('Rate limit persistente na API CoinGecko. Usando dados padrão.');
-            return null; // Retorna null em vez de lançar erro
+            return null;
         }
         
         throw handleError(error, `getMarketCap(${assetIds.join(',')})`);
+    }
+};
+
+// Função para disparar sincronização manual (útil para botão "Atualizar" no frontend)
+export const syncData = async () => {
+    try {
+        await apiClient.post('/sync');
+        return true;
+    } catch (error) {
+        console.error("Falha ao solicitar sincronização:", error);
+        return false;
     }
 };

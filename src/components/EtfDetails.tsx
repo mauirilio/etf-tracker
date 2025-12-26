@@ -14,7 +14,7 @@ interface EtfDetailsProps {
 const EtfDetails: React.FC<EtfDetailsProps> = ({ etf, isOpen, onClose, formatCurrency }) => {
     if (!isOpen) return null;
 
-    const flowValue = parseFloat(etf.dailyNetInflow.value);
+    const flowValue = parseFloat(String(etf.dailyNetInflow.value));
     const isPositiveFlow = flowValue >= 0;
 
     return (

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import type { EtfHistory, EtfData } from '../types/etfTypes';
+import type { EtfData, AssetType } from '../types/etfTypes';
 import { FiRefreshCw } from 'react-icons/fi';
 import SummaryCardSkeleton from '../components/skeletons/SummaryCardSkeleton';
 import ChartSkeleton from '../components/skeletons/ChartSkeleton';
@@ -13,7 +13,9 @@ import './Dashboard.css';
 import '../components/EtfDetails.css';
 
 const formatCurrency = (value: string | number) => {
-    const numValue = typeof value === 'string' ? parseFloat(value.replace(/[^0-9.-]+/g,"")) : value;
+    // Garante que value seja tratado corretamente, mesmo se for número
+    const stringValue = String(value);
+    const numValue = parseFloat(stringValue.replace(/[^0-9.-]+/g,""));
 
     if (typeof numValue !== 'number' || isNaN(numValue)) {
         return '$0.00';
@@ -38,12 +40,24 @@ interface DashboardProps {
 const Dashboard: React.FC<DashboardProps> = ({ theme, toggleTheme }) => {
     const [positiveColor, setPositiveColor] = useState('#28a745');
     const [negativeColor, setNegativeColor] = useState('#dc3545');
-    const [selectedAsset, setSelectedAsset] = useState<'btc' | 'eth'>('btc');
+    const [selectedAsset, setSelectedAsset] = useState<AssetType>('btc');
     const { data, history, marketCap, loading, error, fetchData } = useEtfData(selectedAsset);
     const [timeRange, setTimeRange] = useState<'Diário' | 'Semanal' | 'Mensal' | 'Personalizado'>('Diário');
     const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
     const [selectedEtf, setSelectedEtf] = useState<EtfData | null>(null);
     const [isEtfDetailsOpen, setIsEtfDetailsOpen] = useState(false);
+
+    useEffect(() => {
+        if (data.length > 0) {
+            console.log('Dashboard Data Received:', data);
+            console.log('First ETF:', data[0]);
+        }
+        if (history.length > 0) {
+            console.log('Dashboard History Received:', history.length, 'items');
+            console.log('First History Item:', history[0]);
+            console.log('Last History Item:', history[history.length - 1]);
+        }
+    }, [data, history]);
 
     useEffect(() => {
         const style = getComputedStyle(document.documentElement);
@@ -55,8 +69,8 @@ const Dashboard: React.FC<DashboardProps> = ({ theme, toggleTheme }) => {
 
 
 
-    const totalNetAssets = data.reduce((acc, etf) => acc + parseFloat(etf.netAssets.value), 0);
-    const assetMarketCap = marketCap && marketCap[selectedAsset === 'btc' ? 'bitcoin' : 'ethereum']?.usd_market_cap;
+    const totalNetAssets = data.reduce((acc, etf) => acc + parseFloat(String(etf.netAssets.value)), 0);
+    const assetMarketCap = marketCap && marketCap[selectedAsset === 'btc' ? 'bitcoin' : selectedAsset === 'eth' ? 'ethereum' : 'solana']?.usd_market_cap;
     const marketCapPercentage = assetMarketCap ? (totalNetAssets / assetMarketCap) * 100 : 0;
 
     const [startDate, endDate] = dateRange;
@@ -65,7 +79,7 @@ const Dashboard: React.FC<DashboardProps> = ({ theme, toggleTheme }) => {
         [...history].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()), 
     [history]);
 
-    const lastDayNetFlow = baseSortedHistory.length > 0 ? parseFloat(baseSortedHistory[baseSortedHistory.length - 1].totalNetInflow) : 0;
+    const lastDayNetFlow = baseSortedHistory.length > 0 ? parseFloat(String(baseSortedHistory[baseSortedHistory.length - 1].totalNetInflow)) : 0;
 
     const chartData = useMemo(() => {
         let historyToProcess = baseSortedHistory;
@@ -85,7 +99,7 @@ const Dashboard: React.FC<DashboardProps> = ({ theme, toggleTheme }) => {
                 if (!acc[monthKey]) {
                     acc[monthKey] = 0;
                 }
-                acc[monthKey] += parseFloat(item.totalNetInflow);
+                acc[monthKey] += parseFloat(String(item.totalNetInflow));
                 return acc;
             }, {} as Record<string, number>);
 
@@ -108,7 +122,7 @@ const Dashboard: React.FC<DashboardProps> = ({ theme, toggleTheme }) => {
                 if (!acc[weekKey]) {
                     acc[weekKey] = 0;
                 }
-                acc[weekKey] += parseFloat(item.totalNetInflow);
+                acc[weekKey] += parseFloat(String(item.totalNetInflow));
                 return acc;
             }, {} as Record<string, number>);
 
@@ -128,7 +142,7 @@ const Dashboard: React.FC<DashboardProps> = ({ theme, toggleTheme }) => {
             const date = new Date(item.date);
             return {
                 date: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' }),
-                flow: parseFloat(item.totalNetInflow) / 1e6,
+                flow: parseFloat(String(item.totalNetInflow)) / 1e6,
             };
         });
     }, [baseSortedHistory, timeRange, startDate, endDate]);
@@ -179,6 +193,7 @@ const Dashboard: React.FC<DashboardProps> = ({ theme, toggleTheme }) => {
                 <div className="asset-selector">
                     <button className={selectedAsset === 'btc' ? 'active' : ''} onClick={() => setSelectedAsset('btc')}>Bitcoin (BTC)</button>
                     <button className={selectedAsset === 'eth' ? 'active' : ''} onClick={() => setSelectedAsset('eth')}>Ethereum (ETH)</button>
+                    <button className={selectedAsset === 'sol' ? 'active' : ''} onClick={() => setSelectedAsset('sol')}>Solana (SOL)</button>
                 </div>
                 <div className="header-right">
                     <button onClick={() => fetchData()} className="refresh-button" disabled={loading}>

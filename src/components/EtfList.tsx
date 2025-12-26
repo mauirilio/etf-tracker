@@ -10,10 +10,10 @@ interface EtfListProps {
 
 const EtfList: React.FC<EtfListProps> = ({ etfs, formatCurrency, onEtfClick }) => {
     // Ordena os ETFs pelo maior fluxo líquido diário
-    const sortedEtfs = [...etfs].sort((a, b) => parseFloat(b.dailyNetInflow.value) - parseFloat(a.dailyNetInflow.value));
+    const sortedEtfs = [...etfs].sort((a, b) => parseFloat(String(b.dailyNetInflow.value)) - parseFloat(String(a.dailyNetInflow.value)));
 
     // Define as cores para o ponto
-    const dotColor = (value: string) => parseFloat(value) >= 0 ? 'var(--positive-flow)' : 'var(--negative-flow)';
+    const dotColor = (value: string | number) => parseFloat(String(value)) >= 0 ? 'var(--positive-flow)' : 'var(--negative-flow)';
 
     return (
         <div className="etf-flow-card card">
@@ -33,7 +33,7 @@ const EtfList: React.FC<EtfListProps> = ({ etfs, formatCurrency, onEtfClick }) =
                                 <span>{etf.ticker}</span>
                             </div>
                         </div>
-                        <span className={`etf-flow-value ${parseFloat(etf.dailyNetInflow.value) >= 0 ? 'positive-flow' : 'negative-flow'}`}>
+                        <span className={`etf-flow-value ${parseFloat(String(etf.dailyNetInflow.value)) >= 0 ? 'positive-flow' : 'negative-flow'}`}>
                             {formatCurrency(etf.dailyNetInflow.value)}
                         </span>
                     </div>
