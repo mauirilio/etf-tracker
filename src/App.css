@@ -49,9 +49,9 @@
 }
 
 .app.dark .asset-selector button.active {
-  background-color: #007bff;
+  background-color: #3b82f6;
   color: #ffffff;
-  border-color: #007bff;
+  border-color: #3b82f6;
 }
 
 .app.dark .time-selector button {
@@ -61,9 +61,9 @@
 }
 
 .app.dark .time-selector button.active {
-    background-color: #007bff;
+    background-color: #3b82f6;
     color: #ffffff;
-    border-color: #007bff;
+    border-color: #3b82f6;
 }
 
 .app.dark .datepicker-input {
@@ -75,6 +75,7 @@
 .app.dark .react-datepicker {
     background-color: var(--card-bg-dark);
     border: 1px solid var(--border-color-dark);
+    font-family: inherit;
 }
 
 .app.dark .react-datepicker__header {
@@ -89,15 +90,20 @@
 }
 
 .app.dark .react-datepicker__day:hover {
-    background-color: #007bff;
+    background-color: #3b82f6;
     color: #ffffff;
 }
 
 .app.dark .react-datepicker__day--selected,
 .app.dark .react-datepicker__day--in-selecting-range,
 .app.dark .react-datepicker__day--in-range {
-    background-color: #007bff;
+    background-color: #3b82f6;
     color: #ffffff;
+}
+
+/* Fix arrows in dark mode */
+.app.dark .react-datepicker__navigation-icon::before {
+    border-color: var(--text-color-dark);
 }
 
 .app.dark .recharts-text, .app.dark .recharts-cartesian-axis-tick-value tspan {
