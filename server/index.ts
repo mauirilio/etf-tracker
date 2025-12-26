@@ -104,8 +104,8 @@ app.listen(PORT, async () => {
   
   await syncDatabase();
   
-  // Executa sync inicial ao subir (se banco estiver vazio ou para atualizar)
-  // runFullSync(); 
+  // Executa sync inicial ao subir para não ficar com banco vazio
+  runFullSync(); 
 
   // Ageda sync 2x ao dia (08:00 e 20:00)
   cron.schedule('0 8,20 * * *', () => {
