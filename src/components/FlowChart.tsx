@@ -55,19 +55,21 @@ const FlowChart: React.FC<FlowChartProps> = ({
                 </div>
             </div>
             {chartData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={600}>
-                    <BarChart data={chartData} margin={{ top: 20, right: 40, left: 40, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="date" />
-                        <YAxis tickFormatter={(value) => `$${value}M`} />
-                        <Tooltip formatter={(value: number) => [formatCurrency(value * 1e6), 'Fluxo']} />
-                        <Bar dataKey="flow">
-                            {chartData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.flow >= 0 ? positiveColor : negativeColor} />
-                            ))}
-                        </Bar>
-                    </BarChart>
-                </ResponsiveContainer>
+                <div className="chart-wrapper">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={chartData} margin={{ top: 20, right: 10, left: 0, bottom: 5 }}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                            <XAxis dataKey="date" hide={window.innerWidth < 768} /> {/* Esconde datas no eixo X em mobile se necessário, ou ajusta */}
+                            <YAxis tickFormatter={(value) => `$${value}M`} width={50} />
+                            <Tooltip formatter={(value: number) => [formatCurrency(value * 1e6), 'Fluxo']} />
+                            <Bar dataKey="flow">
+                                {chartData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.flow >= 0 ? positiveColor : negativeColor} />
+                                ))}
+                            </Bar>
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
             ) : (
                 <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-color-secondary)' }}>
                     <h3>Sem dados para o período selecionado.</h3>
