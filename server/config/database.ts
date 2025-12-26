@@ -12,6 +12,12 @@ const sequelize = new Sequelize(
     dialect: 'postgres',
     logging: false,
     port: parseInt(process.env.DB_PORT || '5432', 10),
+    dialectOptions: {
+      ssl: process.env.DB_HOST && process.env.DB_HOST !== 'localhost' ? {
+        require: true,
+        rejectUnauthorized: false // Necessário para Neon e muitos provedores cloud
+      } : false
+    }
   }
 );
 
